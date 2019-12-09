@@ -4574,11 +4574,6 @@ var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
 };
 var elm$core$Basics$add = _Basics_add;
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
-var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
@@ -4741,9 +4736,9 @@ var elm$core$List$range = F2(
 	function (lo, hi) {
 		return A3(elm$core$List$rangeHelp, lo, hi, _List_Nil);
 	});
-var elm_explorations$benchmark$Benchmark$Benchmark$Single = F3(
-	function (a, b, c) {
-		return {$: 0, a: a, b: b, c: c};
+var elm_explorations$benchmark$Benchmark$Benchmark$Series = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
 	});
 var elm_explorations$benchmark$Benchmark$LowLevel$StackOverflow = {$: 0};
 var elm_explorations$benchmark$Benchmark$LowLevel$UnknownError = function (a) {
@@ -4753,13 +4748,22 @@ var elm_explorations$benchmark$Benchmark$LowLevel$operation = function (fn) {
 	return _Benchmark_operation(fn);
 };
 var elm_explorations$benchmark$Benchmark$Status$Cold = {$: 0};
-var elm_explorations$benchmark$Benchmark$benchmark = F2(
-	function (name, fn) {
-		return A3(
-			elm_explorations$benchmark$Benchmark$Benchmark$Single,
+var elm_explorations$benchmark$Benchmark$compare = F5(
+	function (name, name1, fn1, name2, fn2) {
+		return A2(
+			elm_explorations$benchmark$Benchmark$Benchmark$Series,
 			name,
-			elm_explorations$benchmark$Benchmark$LowLevel$operation(fn),
-			elm_explorations$benchmark$Benchmark$Status$Cold);
+			_List_fromArray(
+				[
+					_Utils_Tuple3(
+					name1,
+					elm_explorations$benchmark$Benchmark$LowLevel$operation(fn1),
+					elm_explorations$benchmark$Benchmark$Status$Cold),
+					_Utils_Tuple3(
+					name2,
+					elm_explorations$benchmark$Benchmark$LowLevel$operation(fn2),
+					elm_explorations$benchmark$Benchmark$Status$Cold)
+				]));
 	});
 var elm_explorations$benchmark$Benchmark$Benchmark$Group = F2(
 	function (a, b) {
@@ -4787,173 +4791,103 @@ var author$project$Main$suite = function () {
 		'Lists',
 		_List_fromArray(
 			[
-				A2(
-				elm_explorations$benchmark$Benchmark$describe,
+				A5(
+				elm_explorations$benchmark$Benchmark$compare,
 				'map f (map g l) → map (f . g) l',
-				_List_fromArray(
-					[
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'pre',
-						function (_n0) {
-							return A2(
-								elm$core$List$map,
-								f,
-								A2(elm$core$List$map, g, sampleList));
-						}),
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'post',
-						function (_n1) {
-							return A2(
-								elm$core$List$map,
-								A2(elm$core$Basics$composeR, g, f),
-								sampleList);
-						})
-					])),
-				A2(
-				elm_explorations$benchmark$Benchmark$describe,
+				'pre',
+				function (_n0) {
+					return A2(
+						elm$core$List$map,
+						f,
+						A2(elm$core$List$map, g, sampleList));
+				},
+				'post',
+				function (_n1) {
+					return A2(
+						elm$core$List$map,
+						A2(elm$core$Basics$composeR, g, f),
+						sampleList);
+				}),
+				A5(
+				elm_explorations$benchmark$Benchmark$compare,
 				'reverse (reverse l) → l',
-				_List_fromArray(
-					[
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'pre',
-						function (_n2) {
-							return elm$core$List$reverse(
-								elm$core$List$reverse(sampleList));
-						}),
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'post',
-						function (_n3) {
-							return sampleList;
-						})
-					])),
-				A2(
-				elm_explorations$benchmark$Benchmark$describe,
+				'pre',
+				function (_n2) {
+					return elm$core$List$reverse(
+						elm$core$List$reverse(sampleList));
+				},
+				'post',
+				function (_n3) {
+					return sampleList;
+				}),
+				A5(
+				elm_explorations$benchmark$Benchmark$compare,
 				'foldr f z (reverse l) → foldl f z l',
-				_List_fromArray(
-					[
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'pre',
-						function (_n4) {
-							return A3(
-								elm$core$List$foldr,
-								h,
-								0,
-								elm$core$List$reverse(sampleList));
-						}),
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'post',
-						function (_n5) {
-							return A3(elm$core$List$foldl, h, 0, sampleList);
-						})
-					])),
-				A2(
-				elm_explorations$benchmark$Benchmark$describe,
+				'pre',
+				function (_n4) {
+					return A3(
+						elm$core$List$foldr,
+						h,
+						0,
+						elm$core$List$reverse(sampleList));
+				},
+				'post',
+				function (_n5) {
+					return A3(elm$core$List$foldl, h, 0, sampleList);
+				}),
+				A5(
+				elm_explorations$benchmark$Benchmark$compare,
 				'foldr f z (map g l) → foldr (\\x acc -> f (g x) acc) z l',
-				_List_fromArray(
-					[
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'pre',
-						function (_n6) {
-							return A3(
-								elm$core$List$foldr,
-								h,
-								0,
-								A2(elm$core$List$map, f, sampleList));
-						}),
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'post',
-						function (_n7) {
-							return A3(
-								elm$core$List$foldr,
-								F2(
-									function (x, acc) {
-										return A2(
-											h,
-											f(x),
-											acc);
-									}),
-								0,
-								sampleList);
-						})
-					])),
-				A2(
-				elm_explorations$benchmark$Benchmark$describe,
+				'pre',
+				function (_n6) {
+					return A3(
+						elm$core$List$foldr,
+						h,
+						0,
+						A2(elm$core$List$map, f, sampleList));
+				},
+				'post',
+				function (_n7) {
+					return A3(
+						elm$core$List$foldr,
+						F2(
+							function (x, acc) {
+								return A2(
+									h,
+									f(x),
+									acc);
+							}),
+						0,
+						sampleList);
+				}),
+				A5(
+				elm_explorations$benchmark$Benchmark$compare,
 				'any identity (map f l) → any f l',
-				_List_fromArray(
-					[
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'pre',
-						function (_n8) {
-							return A2(
-								elm$core$List$any,
-								elm$core$Basics$identity,
-								A2(elm$core$List$map, j, sampleList));
-						}),
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'post',
-						function (_n9) {
-							return A2(elm$core$List$any, j, sampleList);
-						})
-					])),
-				A2(
-				elm_explorations$benchmark$Benchmark$describe,
+				'pre',
+				function (_n8) {
+					return A2(
+						elm$core$List$any,
+						elm$core$Basics$identity,
+						A2(elm$core$List$map, j, sampleList));
+				},
+				'post',
+				function (_n9) {
+					return A2(elm$core$List$any, j, sampleList);
+				}),
+				A5(
+				elm_explorations$benchmark$Benchmark$compare,
 				'all identity (map f l) → all f l',
-				_List_fromArray(
-					[
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'pre',
-						function (_n10) {
-							return A2(
-								elm$core$List$all,
-								elm$core$Basics$identity,
-								A2(elm$core$List$map, j, sampleList));
-						}),
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'post',
-						function (_n11) {
-							return A2(elm$core$List$all, j, sampleList);
-						})
-					])),
-				A2(
-				elm_explorations$benchmark$Benchmark$describe,
-				'foldr (\\x acc -> acc ++ [x]) z l → foldl (::) z l',
-				_List_fromArray(
-					[
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'pre',
-						function (_n12) {
-							return A3(
-								elm$core$List$foldr,
-								F2(
-									function (x, acc) {
-										return _Utils_ap(
-											acc,
-											_List_fromArray(
-												[x]));
-									}),
-								_List_Nil,
-								smallerSampleList);
-						}),
-						A2(
-						elm_explorations$benchmark$Benchmark$benchmark,
-						'post',
-						function (_n13) {
-							return A3(elm$core$List$foldl, elm$core$List$cons, _List_Nil, smallerSampleList);
-						})
-					]))
+				'pre',
+				function (_n10) {
+					return A2(
+						elm$core$List$all,
+						elm$core$Basics$identity,
+						A2(elm$core$List$map, j, sampleList));
+				},
+				'post',
+				function (_n11) {
+					return A2(elm$core$List$all, j, sampleList);
+				})
 			]));
 }();
 var elm$core$Array$branchFactor = 32;
@@ -5024,6 +4958,10 @@ var elm$core$Array$treeFromBuilder = F2(
 				continue treeFromBuilder;
 			}
 		}
+	});
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
 	});
 var elm$core$Basics$floor = _Basics_floor;
 var elm$core$Basics$max = F2(
@@ -5128,6 +5066,7 @@ var elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 2, a: a};
 };
 var elm$core$Basics$and = _Basics_and;
+var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$or = _Basics_or;
 var elm$core$Char$toCode = _Char_toCode;
 var elm$core$Char$isLower = function (_char) {
@@ -7073,9 +7012,9 @@ var elm_explorations$benchmark$Benchmark$stepLowLevel = F2(
 				return elm$core$Task$succeed(status);
 		}
 	});
-var elm_explorations$benchmark$Benchmark$Benchmark$Series = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
+var elm_explorations$benchmark$Benchmark$Benchmark$Single = F3(
+	function (a, b, c) {
+		return {$: 0, a: a, b: b, c: c};
 	});
 var elm_explorations$benchmark$Benchmark$step = function (benchmark_) {
 	switch (benchmark_.$) {
