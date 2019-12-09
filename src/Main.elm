@@ -26,7 +26,7 @@ suite =
             modBy 7 x == 1
     in
     describe "Lists"
-        [ compare "map f (map g l) → map (f . g) l" "pre" (\_ -> List.map f (List.map g sampleList)) "post" (\_ -> List.map (g >> f) sampleList)
+        [ compare "map f (map g l) → map (\\x -> f (g x)) l" "pre" (\_ -> List.map f (List.map g sampleList)) "post" (\_ -> List.map (\x -> f (g x)) sampleList)
         , compare "reverse (reverse l) → l" "pre" (\_ -> List.reverse (List.reverse sampleList)) "post" (\_ -> sampleList)
         , compare "foldr f z (reverse l) → foldl f z l" "pre" (\_ -> List.foldr h 0 (List.reverse sampleList)) "post" (\_ -> List.foldl h 0 sampleList)
         , compare "foldr f z (map g l) → foldr (\\x acc -> f (g x) acc) z l" "pre" (\_ -> List.foldr h 0 (List.map f sampleList)) "post" (\_ -> List.foldr (\x acc -> h (f x) acc) 0 sampleList)

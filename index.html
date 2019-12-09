@@ -4575,11 +4575,6 @@ var elm$core$Array$toList = function (array) {
 };
 var elm$core$Basics$add = _Basics_add;
 var elm$core$Basics$append = _Utils_append;
-var elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
 var elm$core$Basics$eq = _Utils_equal;
 var elm$core$Basics$identity = function (x) {
 	return x;
@@ -4794,7 +4789,7 @@ var author$project$Main$suite = function () {
 			[
 				A5(
 				elm_explorations$benchmark$Benchmark$compare,
-				'map f (map g l) → map (f . g) l',
+				'map f (map g l) → map (\\x -> f (g x)) l',
 				'pre',
 				function (_n0) {
 					return A2(
@@ -4806,7 +4801,10 @@ var author$project$Main$suite = function () {
 				function (_n1) {
 					return A2(
 						elm$core$List$map,
-						A2(elm$core$Basics$composeR, g, f),
+						function (x) {
+							return f(
+								g(x));
+						},
 						sampleList);
 				}),
 				A5(
@@ -6431,6 +6429,11 @@ var elm_explorations$benchmark$Benchmark$finalize = function (samples) {
 	}
 };
 var elm_explorations$benchmark$Benchmark$LowLevel$defaultMinimum = 1;
+var elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
 var elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
