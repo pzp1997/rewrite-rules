@@ -4574,6 +4574,7 @@ var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
 };
 var elm$core$Basics$add = _Basics_add;
+var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
@@ -4887,6 +4888,27 @@ var author$project$Main$suite = function () {
 				'post',
 				function (_n11) {
 					return A2(elm$core$List$all, j, sampleList);
+				}),
+				A5(
+				elm_explorations$benchmark$Benchmark$compare,
+				'foldr (\\x acc -> acc ++ [x]) z l → foldl (::) z l',
+				'pre',
+				function (_n12) {
+					return A3(
+						elm$core$List$foldr,
+						F2(
+							function (x, acc) {
+								return _Utils_ap(
+									acc,
+									_List_fromArray(
+										[x]));
+							}),
+						_List_Nil,
+						smallerSampleList);
+				},
+				'post',
+				function (_n13) {
+					return A3(elm$core$List$foldl, elm$core$List$cons, _List_Nil, smallerSampleList);
 				})
 			]));
 }();
@@ -5066,7 +5088,6 @@ var elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 2, a: a};
 };
 var elm$core$Basics$and = _Basics_and;
-var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$or = _Basics_or;
 var elm$core$Char$toCode = _Char_toCode;
 var elm$core$Char$isLower = function (_char) {

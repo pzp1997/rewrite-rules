@@ -33,6 +33,8 @@ suite =
         , compare "any identity (map f l) → any f l" "pre" (\_ -> List.any identity (List.map j sampleList)) "post" (\_ -> List.any j sampleList)
         , compare "all identity (map f l) → all f l" "pre" (\_ -> List.all identity (List.map j sampleList)) "post" (\_ -> List.all j sampleList)
 
+        -- the pre of this rule is so bad it causes Chrome to crash on lists of 1k+ elements
+        , compare "foldr (\\x acc -> acc ++ [x]) z l → foldl (::) z l" "pre" (\_ -> List.foldr (\x acc -> acc ++ [x]) [] smallerSampleList) "post" (\_ -> List.foldl (::) [] smallerSampleList)
         
         -- Tuple.first (List.unzip list) → List.map Tuple.first list
         -- Tuple.second (List.unzip list) → List.map Tuple.second list
